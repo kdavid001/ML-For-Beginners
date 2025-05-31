@@ -22,16 +22,19 @@ def imload(fname,size):
     img = img / np.max(img)
     return img
 
-def draw_line(dx,dy,size=50):
-    p=np.ones((size-2,size-2,3))
-    if dx==0:
-        dx=0.001
-    m = (size-2)//2
-    l = math.sqrt(dx*dx+dy*dy)*(size-4)/2
-    a = math.atan(dy/dx)
-    cv2.line(p,(int(m-l*math.cos(a)),int(m-l*math.sin(a))),(int(m+l*math.cos(a)),int(m+l*math.sin(a))),(0,0,0),1)
-    s = -1 if dx<0 else 1
-    cv2.circle(p,(int(m+s*l*math.cos(a)),int(m+s*l*math.sin(a))),3,0)
+def draw_line(dx, dy, size=50):
+    p = np.ones((size-2, size-2, 3))
+    m = (size - 2) // 2
+    l = math.sqrt(dx*dx + dy*dy) * (size - 4) / 2
+    a = math.atan2(dy, dx)  # safer for all directions
+    cv2.line(p,
+             (int(m - l * math.cos(a)), int(m - l * math.sin(a))),
+             (int(m + l * math.cos(a)), int(m + l * math.sin(a))),
+             (0, 0, 0), 1)
+    s = -1 if dx < 0 else 1
+    cv2.circle(p,
+               (int(m + s * l * math.cos(a)), int(m + s * l * math.sin(a))),
+               3, (0, 0, 0), -1)
     return p   
 
 def probs(v):
@@ -189,7 +192,7 @@ class Board:
             while True:
                 a = policy(self)
                 new_pos = self.move_pos(self.human,a)
-                if self.is_valid(new_pos) and self.at(new_pos)!=Board.Cell.water:
-                    self.move(a) # do the actual move
+                if self.is_valid(new_pos) and self.at(new_pos) != Board.Cell.water:
+                    self.move(a)  # do the actual move
                     break
-            n+=1
+            n += 1
